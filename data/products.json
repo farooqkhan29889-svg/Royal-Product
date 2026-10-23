@@ -1,0 +1,167 @@
+[
+  {
+    "id": "pure-gold-honey",
+    "name": "Pure Gold Honey",
+    "hindi_title": "शुद्ध शहद",
+    "category": "Honey",
+    "weight": "500g",
+    "price": 499,
+    "mrp": 699,
+    "rating": 4.9,
+    "rating_count": 348,
+    "badge": "BESTSELLER",
+    "discount_badge": "Save 26%",
+    "stock_left": 4,
+    "recent_orders": "129 people ordered recently",
+    "short_desc": "Raw forest honey & natural sweetness — no added sugar, zero preservatives. Pure • Natural • Golden.",
+    "highlights": [
+      "Nature's richest golden nectar straight from wild hives",
+      "0% High Fructose Corn Syrup & 0% Added Glucose",
+      "Rich in bee pollen, royal jelly traces, & living enzymes",
+      "NMR tested 100% genuine purity guarantee"
+    ],
+    "description": "Nature's sweetest gift in its purest form — thick, amber golden raw honey harvested from natural floral valleys. No chemical treatment, no adulteration, no artificial sweeteners. Loved by fitness athletes, families, and seniors for daily strength and natural sweetening.",
+    "image": "Pure mony.jpeg",
+    "variants": [
+      {"weight": "250g", "price": 299, "mrp": 399, "save": "Save 25%"},
+      {"weight": "500g", "price": 499, "mrp": 699, "save": "Save 29%"},
+      {"weight": "1 kg", "price": 849, "mrp": 1149, "save": "Save 26%"}
+    ],
+    "reviews": [
+      {"name": "Amit Saxena", "rating": 5, "comment": "100% authentic test passed (doesn't dissolve fast in water, catches flame). Super value for 1kg!", "verified": true},
+      {"name": "Sneha Roy", "rating": 5, "comment": "Replaced all white sugar at home with this. My kids love it on pancakes and warm milk.", "verified": true}
+    ]
+  },
+  {
+    "id": "mix-dry-fruits",
+    "name": "Premium Mix Dry Fruits & Nuts",
+    "hindi_title": "प्रीमियम ड्राई फ्रूट्स & नट्स",
+    "category": "Dry Fruits",
+    "weight": "250g",
+    "price": 349,
+    "mrp": 449,
+    "rating": 4.8,
+    "rating_count": 234,
+    "badge": "NEW",
+    "discount_badge": "Save 22%",
+    "stock_left": 8,
+    "recent_orders": "165 people ordered recently",
+    "short_desc": "Almonds, cashews, raisins, pumpkin seeds, sunflower seeds & dried fruits. No added preservatives, no artificial colors.",
+    "highlights": [
+      "Handpicked vacuum-sealed premium nuts & roasted seeds",
+      "Includes Cashews, Almonds, Black Raisins, Pumpkin & Sunflower Seeds",
+      "Zero added salt, zero oil, zero preservatives",
+      "Re-sealable airtight freshness jar with golden lid"
+    ],
+    "description": "Har bite mein health aur swad! Selected grade-A crunchy almonds, whole cashew kernels, seedless black Afghan raisins, raw pumpkin seeds, sunflower seeds, and dried cranberries. The cleanest on-the-go nutrition for professionals, students, and athletes.",
+    "image": "Cchoti makhi.jpeg",
+    "variants": [
+      {"weight": "250g", "price": 349, "mrp": 449, "save": "Save 22%"},
+      {"weight": "500g", "price": 599, "mrp": 799, "save": "Save 25%"},
+      {"weight": "1 kg", "price": 849, "mrp": 1149, "save": "Save 26%"}
+    ],
+    "reviews": [
+      {"name": "Rohit Nair", "rating": 5, "comment": "Super fresh and crunchy! You can immediately tell they don't use stale nuts like retail stores.", "verified": true},
+      {"name": "Ananya Sen", "rating": 5, "comment": "Love the mix ratio. Not just cheap peanuts, genuine top quality almonds and cashews.", "verified": true}
+    ]
+  },
+  {
+    "id": "chhoti-makhi-honey",
+    "name": "Rare Chhoti Makhi Honey",
+    "hindi_title": "छोटी मकड़ी शहद",
+    "category": "Honey",
+    "weight": "500g",
+    "price": 300,
+    "mrp": 449,
+    "rating": 4.9,
+    "rating_count": 196,
+    "badge": "LIMITED HARVEST",
+    "discount_badge": "Save 33%",
+    "stock_left": 3,
+    "recent_orders": "92 people ordered recently",
+    "short_desc": "Rare wild dwarf bee honey (Apis florea) with supreme Ayurvedic medicinal value. 100% genuine kharā shahad.",
+    "highlights": [
+      "Extremely rare honey from wild dwarf bees (Apis florea)",
+      "Highest Ayurvedic medicinal value known to science",
+      "Tangy, complex wild nectar notes with active raw pollen",
+      "Strictly limited seasonal harvest batch"
+    ],
+    "description": "Shahad ki mithas, prakriti ke saath. Rare honey harvested from small wild bees nesting in remote thickets. Highly prized in traditional Ayurveda for respiratory health, eyesight sharpness, and cellular rejuvenation. 100% genuine kharā shahad.",
+    "image": "Chhoti makhi hony.jpeg",
+    "variants": [
+      {"weight": "250g", "price": 300, "mrp": 449, "save": "Save 33%"},
+      {"weight": "500g", "price": 599, "mrp": 799, "save": "Save 25%"},
+      {"weight": "1 kg", "price": 1099, "mrp": 1499, "save": "Save 27%"}
+    ],
+    "reviews": [
+      {"name": "Vikas Patel", "rating": 5, "comment": "Chhoti makhi honey is so hard to find genuine. Delivered 100% real stuff!", "verified": true},
+      {"name": "Meera Joshi", "rating": 5, "comment": "Helped my chronic morning cough within 2 weeks. Magical natural medicine.", "verified": true}
+    ]
+  },
+  {
+    "id": "dryfruits-honey",
+    "name": "Superfood Dry Fruits wala Honey Jar",
+    "hindi_title": "शाही कॉम्बो",
+    "category": "Combo Packs",
+    "weight": "500g",
+    "price": 700,
+    "mrp": 949,
+    "rating": 4.9,
+    "rating_count": 178,
+    "badge": "BESTSELLER",
+    "discount_badge": "Save 26%",
+    "stock_left": 5,
+    "recent_orders": "114 people ordered recently",
+    "short_desc": "Jumbo Mamra Almonds, Kashmiri Walnuts & Pistachios submerged in thick golden raw honey.",
+    "highlights": [
+      "Jumbo Mamra Almonds, Kashmiri Walnuts & Pistachios in Pure Honey",
+      "Powerhouse of Omega-3, Plant Protein & Instant Energy",
+      "FSSAI certified, zero artificial flavour, zero preservatives",
+      "Ideal healthy gifting jar & gym workout pre-meal"
+    ],
+    "description": "Asli shahad aur premium nuts ka shahi sangam! Crunchy California & Mamra almonds, rich cashews, golden raisins, walnuts, pumpkin seeds, and melon seeds slow-steeped in pure golden raw honey. One spoonful every morning delivers stamina and vitality.",
+    "image": "Dry Friuts.jpeg",
+    "variants": [
+      {"weight": "250g", "price": 399, "mrp": 549, "save": "Save 27%"},
+      {"weight": "500g", "price": 700, "mrp": 949, "save": "Save 26%"},
+      {"weight": "1 kg", "price": 1299, "mrp": 1799, "save": "Save 28%"}
+    ],
+    "reviews": [
+      {"name": "Karan Malhotra", "rating": 5, "comment": "Best healthy snack ever. Crunchy nuts dripping with thick honey. Ordering my third jar now!", "verified": true},
+      {"name": "Sunita Aggarwal", "rating": 5, "comment": "Sent these as festive gifts to relatives. Everyone called to ask where I bought it!", "verified": true}
+    ]
+  },
+  {
+    "id": "neem-honey",
+    "name": "Royal Neem Honey",
+    "hindi_title": "कच्चा नीम शहद",
+    "category": "Honey",
+    "weight": "500g",
+    "price": 350,
+    "mrp": 499,
+    "rating": 4.8,
+    "rating_count": 212,
+    "badge": "HEALTH & DETOX",
+    "discount_badge": "Save 30%",
+    "stock_left": 6,
+    "recent_orders": "84 people ordered recently",
+    "short_desc": "Harvested from wild blooming neem forests. Kadwahat aur shahad ki mithas ka sehat ka khazana.",
+    "highlights": [
+      "100% Pure, Raw & Unpasteurized from neem blossom hives",
+      "Rich in natural antioxidants & antibacterial enzymes",
+      "Blood purifier & natural immunity shield",
+      "Direct from wild forest beekeepers"
+    ],
+    "description": "Kadwahat aur shahad ki mithas ka sehat ka khazana! Royal Neem Honey is harvested straight from deep neem forest blooming hives. Completely unheated and unfiltered to preserve natural enzymes, bee pollen, and minerals. Perfect for morning detox, boosting immunity, purifying blood, and glowing skin.",
+    "image": "Neem hony.jpeg",
+    "variants": [
+      {"weight": "250g", "price": 249, "mrp": 349, "save": "Save 29%"},
+      {"weight": "500g", "price": 350, "mrp": 499, "save": "Save 30%"},
+      {"weight": "1 kg", "price": 649, "mrp": 899, "save": "Save 28%"}
+    ],
+    "reviews": [
+      {"name": "Dr. Rajesh Sharma", "rating": 5, "comment": "Purest neem honey I've ever tasted. You can feel the real nectar aroma and rich texture.", "verified": true},
+      {"name": "Pooja Verma", "rating": 5, "comment": "My morning warm water routine is incomplete without this. Authentic desi purity!", "verified": true}
+    ]
+  }
+]
