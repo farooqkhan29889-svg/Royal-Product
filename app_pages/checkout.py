@@ -7,6 +7,7 @@ from utils.store import (
     cart_total,
     clear_cart,
     get_coupon_discount,
+    normalize_phone,
     save_order,
 )
 from utils.ui import apply_store_css, render_announcement_bar
@@ -37,7 +38,9 @@ with checkout_right:
                 st.image(product["image"], use_container_width=True)
             with item_cols[1]:
                 st.markdown(f"**{product['name']}**")
-                st.caption(f"Qty: {qty} × ₹{product['price']:g}")
+                st.caption(
+                    f"{product['selected_weight']} · Qty: {qty} × ₹{product['price']:g}"
+                )
             with item_cols[2]:
                 st.markdown(f"**₹{product['price'] * qty:g}**")
 
@@ -81,10 +84,26 @@ with checkout_right:
 with checkout_left:
     with st.form("checkout_form"):
         st.subheader("📍 1. Delivery Information")
-        name = st.text_input("Full Name", placeholder="e.g. Ramesh Kumar")
-        email = st.text_input("Email Address", placeholder="e.g. ramesh@example.com (for order tracking)")
-        address = st.text_area("Complete Delivery Address", placeholder="House/Flat No., Street, Landmark, City, State, Pincode")
-        phone = st.text_input("Phone Number (Optional - for delivery rider updates)", placeholder="e.g. 9876543210")
+        st.caption("Name, mobile number and delivery address are required. Email is optional.")
+        name = st.text_input(
+            "Full Name", placeholder="e.g. Ramesh Kumar", key="checkout_name"
+        )
+        phone = st.text_input(
+            "Mobile Number",
+            placeholder="10-digit mobile number",
+            key="checkout_mobile",
+            max_chars=16,
+        )
+        email = st.text_input(
+            "Email Address (optional)",
+            placeholder="e.g. ramesh@example.com",
+            key="checkout_email",
+        )
+        address = st.text_area(
+            "Complete Delivery Address",
+            placeholder="House/Flat No., Street, Landmark, City, State, Pincode",
+            key="checkout_address",
+        )
 
         st.write("")
         st.subheader("💳 2. Select Payment Method")
@@ -92,24 +111,19 @@ with checkout_left:
             "Payment Method",
             [
                 "Cash on Delivery (Pay at Doorstep)",
-                "Credit / Debit Card (demo)",
                 "UPI / GooglePay / PhonePe (demo)",
+                "Credit / Debit Card (demo)",
             ],
             horizontal=False,
             label_visibility="collapsed",
+            key="checkout_payment",
         )
-
-        if "Card" in payment_method:
-            st.text_input(
-                "Card Number",
-                value="4242 4242 4242 4242",
-                help="Demo checkout — never real charge.",
-            )
+        st.caption("Card and UPI are demo options. No real online payment is collected.")
 
         st.markdown(
             """
             <div style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 10px; border-radius: 8px; font-size: 0.82rem; color: #166534; margin: 10px 0;">
-                ✓ <b>No Risk:</b> Inspect your natural honey jar on delivery. Pay only when you are 100% happy!
+                ✓ <b>Cash on Delivery:</b> Pay when your order arrives at your doorstep.
             </div>
             """,
             unsafe_allow_html=True,
@@ -118,20 +132,28 @@ with checkout_left:
         submitted = st.form_submit_button(
             f"Confirm & Place Order (₹{final_total:g})",
             icon=":material/lock:",
-            use_container_width=True,
+            width="stretch",
         )
 
 if submitted:
-    if not name.strip() or not email.strip() or not address.strip():
-        st.error("Please fill in your name, email, and delivery address to proceed.", icon=":material/error:")
+    mobile = normalize_phone(phone)
+    if not name.strip() or not phone.strip() or not address.strip():
+        st.error(
+            "Please fill in your name, mobile number, and delivery address.",
+            icon=":material/error:",
+        )
+    elif len(mobile) != 10 or mobile[0] not in "6789":
+        st.error(
+            "Enter a valid 10-digit Indian mobile number.",
+            icon=":material/error:",
+        )
     else:
         cust_dict = {
             "name": name.strip(),
+            "phone": mobile,
             "email": email.strip().lower(),
             "address": address.strip(),
         }
-        if phone.strip():
-            cust_dict["phone"] = phone.strip()
 
         order = save_order(
             cust_dict,
@@ -139,6 +161,7 @@ if submitted:
                 {
                     "id": p["id"],
                     "name": p["name"],
+                    "weight": p["selected_weight"],
                     "price": p["price"],
                     "qty": q,
                 }
@@ -151,5 +174,5 @@ if submitted:
         clear_cart()
         st.toast("🎉 Your order has been placed successfully!")
         st.session_state.last_order_id = order["id"]
-        st.session_state.orders_email = order["customer"]["email"]
+        st.session_state.orders_lookup = mobile
         st.switch_page("app_pages/orders.py")

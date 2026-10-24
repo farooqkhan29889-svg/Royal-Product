@@ -1,6 +1,6 @@
 import streamlit as st
 
-from utils.store import load_orders
+from utils.store import load_orders, normalize_phone
 from utils.ui import (
     WA_ICON_SVG,
     WHATSAPP_PHONE_DISPLAY,
@@ -14,24 +14,34 @@ render_announcement_bar()
 
 st.subheader("📦 Your Orders & Live Tracking")
 
-email = st.text_input(
-    "Enter your order email address",
-    key="orders_email",
-    placeholder="e.g. buyer@example.com",
-    icon=":material/mail:",
+lookup = st.text_input(
+    "Enter your mobile number or email address",
+    key="orders_lookup",
+    placeholder="e.g. 9876543210",
+    icon=":material/search:",
 )
 
-if not email:
+if not lookup.strip():
     st.info(
-        "Enter the email address you entered during checkout to track your orders and view invoices.",
+        "Enter the mobile number or email address you used during checkout to track your orders.",
         icon=":material/search:",
     )
     st.stop()
 
-orders = [o for o in load_orders() if o["customer"]["email"] == email.strip().lower()]
+lookup_text = lookup.strip().lower()
+lookup_phone = normalize_phone(lookup_text)
+orders = [
+    order
+    for order in load_orders()
+    if order["customer"].get("email", "").lower() == lookup_text
+    or (
+        len(lookup_phone) == 10
+        and normalize_phone(order["customer"].get("phone", "")) == lookup_phone
+    )
+]
 
 if not orders:
-    st.warning(f"No previous orders found for '{email.strip().lower()}'.", icon=":material/search_off:")
+    st.warning(f"No previous orders found for '{lookup.strip()}'.", icon=":material/search_off:")
     st.page_link("app_pages/shop.py", label="Explore Royal Natural Shop", icon=":material/storefront:")
     st.stop()
 
@@ -43,7 +53,7 @@ if new_order and any(o["id"] == new_order for o in orders):
     )
     st.balloons()
 
-st.caption(f"Found {len(orders)} order(s) for {email.strip().lower()}")
+st.caption(f"Found {len(orders)} order(s) for {lookup.strip()}")
 
 for order in reversed(orders):
     with st.container(border=True):
@@ -52,7 +62,8 @@ for order in reversed(orders):
             st.markdown(f"### Order #{order['id']}")
             st.caption(
                 f"📅 {order['date']} · 💳 {order['payment_method']}<br>"
-                f"📍 Deliver to: **{order['customer'].get('name', 'Customer')}**, {order['customer']['address'].splitlines()[0]}",
+                f"📍 Deliver to: **{order['customer'].get('name', 'Customer')}**, {order['customer']['address'].splitlines()[0]}<br>"
+                f"📱 Mobile: {order['customer'].get('phone', 'Not provided')}",
                 unsafe_allow_html=True,
             )
         with status_col:
@@ -66,12 +77,15 @@ for order in reversed(orders):
                 unsafe_allow_html=True,
             )
         with total_col:
-            st.metric("Total Paid", f"₹{order['total']:g}")
+            st.metric("Order Total", f"₹{order['total']:g}")
 
         st.divider()
         st.markdown("**Ordered Items:**")
         for item in order["items"]:
-            st.markdown(f"- 🍯 **{item['name']}** × {item['qty']} — **₹{item['price'] * item['qty']:g}**")
+            weight = f" ({item['weight']})" if item.get("weight") else ""
+            st.markdown(
+                f"- 🍯 **{item['name']}**{weight} × {item['qty']} — **₹{item['price'] * item['qty']:g}**"
+            )
 
         if order.get("discount"):
             st.caption(f"🎟️ Discount Applied: {order['discount'].get('coupon', '')} (-₹{order['discount'].get('amount', 0):g})")

@@ -23,8 +23,8 @@ apply_store_css()
 render_announcement_bar()
 
 
-def update_qty(product_id):
-    set_cart_qty(product_id, st.session_state[f"qty_{product_id}"])
+def update_qty(cart_key):
+    set_cart_qty(cart_key, st.session_state[f"qty_{cart_key}"])
 
 
 if not st.session_state.cart:
@@ -76,7 +76,7 @@ left, right = st.columns([2.3, 1.2], gap="large")
 with left:
     st.markdown(f"#### Cart Items ({cart_count()} items)")
     for product, qty in items:
-        pid = product["id"]
+        cart_key = product["cart_key"]
         with st.container(border=True):
             img_col, info_col, qty_col, price_col = st.columns(
                 [1.2, 2.6, 1.2, 1.2], vertical_alignment="center"
@@ -86,7 +86,7 @@ with left:
             with info_col:
                 st.markdown(f"**{product['name']}**")
                 st.caption(
-                    f"{product['category']} · Unit: ₹{product['price']:g} "
+                    f"{product['selected_weight']} · Unit: ₹{product['price']:g} "
                     f"(MRP ~~₹{product.get('mrp', product['price']):g}~~)"
                 )
                 if product.get("stock_left") and product["stock_left"] <= 5:
@@ -96,10 +96,10 @@ with left:
                     )
                 st.button(
                     "Remove",
-                    key=f"remove_{pid}",
+                    key=f"remove_{cart_key}",
                     icon=":material/delete:",
                     on_click=remove_from_cart,
-                    args=(pid,),
+                    args=(cart_key,),
                 )
             with qty_col:
                 st.number_input(
@@ -107,10 +107,10 @@ with left:
                     min_value=1,
                     max_value=99,
                     value=qty,
-                    key=f"qty_{pid}",
+                    key=f"qty_{cart_key}",
                     label_visibility="collapsed",
                     on_change=update_qty,
-                    args=(pid,),
+                    args=(cart_key,),
                 )
             with price_col:
                 st.markdown(f"### ₹{product['price'] * qty:g}")
@@ -192,7 +192,9 @@ with right:
         ):
             st.switch_page("app_pages/checkout.py")
 
-        cart_summary_text = " | ".join([f"{p['name']} (x{q})" for p, q in items])
+        cart_summary_text = " | ".join(
+            [f"{p['name']} ({p['selected_weight']}) x{q}" for p, q in items]
+        )
         cart_wa_link = get_whatsapp_url(
             f"Hi Royal Natural Products, I want to order my cart items: {cart_summary_text}. Total Payable: ₹{final_total:g}. Please deliver to my address!"
         )

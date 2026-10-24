@@ -1,6 +1,7 @@
 """Shared shop logic: products, weight variants, cart, coupons, and orders."""
 
 import json
+import re
 import uuid
 from datetime import datetime
 from pathlib import Path
@@ -37,6 +38,15 @@ def get_product(product_id):
         return None
     base_id = product_id.split("::")[0]
     return next((p for p in load_products() if p["id"] == base_id), None)
+
+
+def normalize_phone(value):
+    digits = re.sub(r"\D", "", value or "")
+    if len(digits) == 12 and digits.startswith("91"):
+        return digits[2:]
+    if len(digits) == 11 and digits.startswith("0"):
+        return digits[1:]
+    return digits
 
 
 def resolve_variant_data(product, weight=None):

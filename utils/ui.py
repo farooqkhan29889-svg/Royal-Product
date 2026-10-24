@@ -37,14 +37,11 @@ html, body, [class*="css"] {
 }
 
 /* Header Navbar */
-.chhoti-header {
+div[class*="st-key-store_header"] {
     background: #07150D;
     border-bottom: 1px solid rgba(245, 158, 11, 0.18);
     padding: 0.9rem 1.2rem;
     margin: -1.5rem -1rem 1.6rem -1rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     position: sticky;
     top: 0;
     z-index: 9999;
@@ -85,38 +82,19 @@ html, body, [class*="css"] {
     align-items: center;
     gap: 14px;
 }
-.header-cart-btn {
-    position: relative;
+div[class*="st-key-store_header"] a[data-testid="stPageLink-NavLink"] {
     background: #F59E0B;
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    color: #111827 !important;
+    border-radius: 25px;
+    padding: 10px 16px;
+    font-weight: 800;
     text-decoration: none;
-    font-size: 1.2rem;
     box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
     transition: transform 0.2s ease;
 }
-.header-cart-btn:hover {
-    transform: scale(1.08);
-}
-.header-cart-badge {
-    position: absolute;
-    top: -3px;
-    right: -3px;
-    background: #111827;
-    color: #FFFFFF;
-    font-size: 0.72rem;
-    font-weight: 800;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    border: 2px solid #F59E0B;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+div[class*="st-key-store_header"] a[data-testid="stPageLink-NavLink"]:hover {
+    background: #FBBF24;
+    transform: scale(1.04);
 }
 .header-wa-btn {
     background: rgba(37, 211, 102, 0.12);
@@ -658,30 +636,40 @@ def get_whatsapp_url(message="Hi Chhoti Makdi Honey, I want to order pure honey 
 
 
 def render_header(cart_count_val=0):
-    """Renders the top branding navigation matching the mobile app screenshot."""
-    st.markdown(
-        f"""
-        <div class="chhoti-header">
-            <a href="?page=Shop" class="brand-container">
-                <div class="brand-bee-icon">🐝</div>
-                <div class="brand-title-wrap">
-                    <span class="brand-hi">{BRAND_NAME_HI}</span>
-                    <span class="brand-en">{BRAND_NAME_EN}</span>
+    """Renders store branding and session-safe cart navigation."""
+    with st.container(key="store_header"):
+        brand_col, wa_col, cart_col = st.columns(
+            [3.2, 1.2, 1.2], vertical_alignment="center"
+        )
+        with brand_col:
+            st.markdown(
+                f"""
+                <div class="brand-container">
+                    <div class="brand-bee-icon">🐝</div>
+                    <div class="brand-title-wrap">
+                        <span class="brand-hi">{BRAND_NAME_HI}</span>
+                        <span class="brand-en">{BRAND_NAME_EN}</span>
+                    </div>
                 </div>
-            </a>
-            <div class="header-actions">
+                """,
+                unsafe_allow_html=True,
+            )
+        with wa_col:
+            st.markdown(
+                f"""
                 <a href="{get_whatsapp_url('Hi Chhoti Makdi Honey, I want to know more about your pure honey products!')}" target="_blank" class="header-wa-btn">
                     <span>💬 WhatsApp</span>
                 </a>
-                <a href="?page=Cart" class="header-cart-btn" title="View Cart">
-                    <span>🛍️</span>
-                    <span class="header-cart-badge">{cart_count_val}</span>
-                </a>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+                """,
+                unsafe_allow_html=True,
+            )
+        with cart_col:
+            st.page_link(
+                "app_pages/cart.py",
+                label=f"Cart ({cart_count_val})",
+                icon=":material/shopping_cart:",
+                width="stretch",
+            )
 
 
 def render_marquee_ticker():
