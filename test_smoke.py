@@ -20,10 +20,14 @@ at.run()
 check("shop renders without exception", not at.exception)
 check("product cards render", at.session_state.cart == {})
 
-# add two products to cart
+# add a product to cart (card default weight = first variant)
 btn(at, "add_chhoti-makhi-honey").click()
 at.run()
-check("cart has watch qty 1", at.session_state.cart.get("chhoti-makhi-honey") == 1)
+cart = at.session_state.cart
+check(
+    "cart has chhoti makhi qty 1 with weight",
+    sum(cart.values()) == 1 and any(k.startswith("chhoti-makhi-honey") for k in cart),
+)
 
 # switch to cart page
 at.switch_page("app_pages/cart.py")

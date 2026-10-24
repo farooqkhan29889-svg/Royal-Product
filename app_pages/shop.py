@@ -238,9 +238,9 @@ for i, product in enumerate(filtered):
                 key=f"add_{pid}",
                 use_container_width=True,
                 on_click=add_to_cart,
-                args=(pid, 1),
+                args=(pid, 1, chosen_weight),
             ):
-                st.toast(f"✅ {product['name']} added to cart!")
+                st.toast(f"✅ {product['name']} ({chosen_weight}) added to cart!")
 
             # WhatsApp Direct Order Button
             wa_text = f"Hi Chhoti Makdi Honey, I want to order {product['name']} ({chosen_weight}) for ₹{curr_price:g}. Please confirm availability!"
