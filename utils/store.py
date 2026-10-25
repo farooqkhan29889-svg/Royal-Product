@@ -201,20 +201,49 @@ def load_orders():
         return []
 
 
-def save_order(customer, items, total, payment_method, discount_info=None):
+def new_order_id():
+    return uuid.uuid4().hex[:8].upper()
+
+
+def save_order(
+    customer,
+    items,
+    total,
+    payment_method,
+    discount_info=None,
+    order_id=None,
+    payment_status="Confirmed",
+    payment_link=None,
+):
     order = {
-        "id": uuid.uuid4().hex[:8].upper(),
+        "id": order_id or new_order_id(),
         "date": datetime.now().strftime("%Y-%m-%d %H:%M"),
         "customer": customer,
         "payment_method": payment_method,
+        "payment_status": payment_status,
         "items": items,
         "total": round(total, 2),
     }
     if discount_info:
         order["discount"] = discount_info
+    if payment_link:
+        order["payment_link"] = payment_link
     orders = load_orders()
     orders.append(order)
     ORDERS_FILE.write_text(
         json.dumps(orders, indent=2, ensure_ascii=False), encoding="utf-8"
     )
     return order
+
+
+def mark_order_paid(order_id):
+    orders = load_orders()
+    for order in orders:
+        if order["id"] == order_id:
+            order["payment_status"] = "Paid"
+            order["paid_at"] = datetime.now().strftime("%Y-%m-%d %H:%M")
+            ORDERS_FILE.write_text(
+                json.dumps(orders, indent=2, ensure_ascii=False), encoding="utf-8"
+            )
+            return order
+    return None

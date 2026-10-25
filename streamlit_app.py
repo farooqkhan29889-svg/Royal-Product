@@ -16,6 +16,7 @@ page = st.navigation(
         st.Page("app_pages/cart.py", title="Cart", icon=":material/shopping_cart:"),
         st.Page("app_pages/checkout.py", title="Checkout", icon=":material/credit_card:"),
         st.Page("app_pages/orders.py", title="Orders", icon=":material/receipt_long:"),
+        st.Page("app_pages/admin.py", title="Admin", icon=":material/shield:"),
     ],
     position="top",
 )

@@ -7,10 +7,14 @@ from utils.store import (
     cart_total,
     clear_cart,
     get_coupon_discount,
+    new_order_id,
     normalize_phone,
     save_order,
 )
+from utils.payments import PaymentError, create_payment_link, razorpay_configured
 from utils.ui import apply_store_css, render_announcement_bar
+
+RAZORPAY_PAYMENT = "UPI / Card via Razorpay"
 
 apply_store_css()
 render_announcement_bar()
@@ -111,14 +115,16 @@ with checkout_left:
             "Payment Method",
             [
                 "Cash on Delivery (Pay at Doorstep)",
-                "UPI / GooglePay / PhonePe (demo)",
-                "Credit / Debit Card (demo)",
+                RAZORPAY_PAYMENT,
             ],
             horizontal=False,
             label_visibility="collapsed",
             key="checkout_payment",
         )
-        st.caption("Card and UPI are demo options. No real online payment is collected.")
+        if razorpay_configured():
+            st.caption("UPI and card payments are processed securely by Razorpay.")
+        else:
+            st.caption("Razorpay needs API keys in .env. Cash on Delivery is available now.")
 
         st.markdown(
             """
@@ -134,6 +140,13 @@ with checkout_left:
             icon=":material/lock:",
             width="stretch",
         )
+
+def finish_checkout(order):
+    clear_cart()
+    st.session_state.last_order_id = order["id"]
+    st.session_state.orders_lookup = order["customer"]["phone"]
+    st.switch_page("app_pages/orders.py")
+
 
 if submitted:
     mobile = normalize_phone(phone)
@@ -154,25 +167,53 @@ if submitted:
             "email": email.strip().lower(),
             "address": address.strip(),
         }
-
-        order = save_order(
-            cust_dict,
-            [
-                {
-                    "id": p["id"],
-                    "name": p["name"],
-                    "weight": p["selected_weight"],
-                    "price": p["price"],
-                    "qty": q,
-                }
-                for p, q in cart_items()
-            ],
-            final_total,
-            payment_method,
-            discount_info={"coupon": applied_coupon, "amount": coupon_discount} if coupon_discount else None,
+        order_items = [
+            {
+                "id": p["id"],
+                "name": p["name"],
+                "weight": p["selected_weight"],
+                "price": p["price"],
+                "qty": q,
+            }
+            for p, q in cart_items()
+        ]
+        discount_info = (
+            {"coupon": applied_coupon, "amount": coupon_discount}
+            if coupon_discount
+            else None
         )
-        clear_cart()
-        st.toast("🎉 Your order has been placed successfully!")
-        st.session_state.last_order_id = order["id"]
-        st.session_state.orders_lookup = mobile
-        st.switch_page("app_pages/orders.py")
+
+        if payment_method == RAZORPAY_PAYMENT:
+            if not razorpay_configured():
+                st.error(
+                    "Razorpay is not configured yet. Add API keys to .env or choose Cash on Delivery.",
+                    icon=":material/error:",
+                )
+            else:
+                order_id = new_order_id()
+                try:
+                    payment_link = create_payment_link(order_id, final_total, cust_dict)
+                except PaymentError as exc:
+                    st.error(str(exc), icon=":material/error:")
+                else:
+                    order = save_order(
+                        cust_dict,
+                        order_items,
+                        final_total,
+                        payment_method,
+                        discount_info=discount_info,
+                        order_id=order_id,
+                        payment_status="Pending payment",
+                        payment_link=payment_link,
+                    )
+                    finish_checkout(order)
+        else:
+            order = save_order(
+                cust_dict,
+                order_items,
+                final_total,
+                payment_method,
+                discount_info=discount_info,
+                payment_status="Cash on Delivery",
+            )
+            finish_checkout(order)
