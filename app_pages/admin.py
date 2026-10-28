@@ -11,6 +11,7 @@ import streamlit as st
 
 from utils.invoice import invoice_bytes, print_invoice_script
 from utils.store import load_orders, load_products
+from utils.firebase_db import is_firebase_available
 from utils.ui import apply_store_css
 
 apply_store_css()
@@ -41,7 +42,12 @@ if st.button("Sign out", icon=":material/logout:"):
 orders = load_orders()
 products = load_products()
 product_lookup = {p["id"]: p for p in products}
-st.caption(f"{len(orders)} order(s) in the shop's order book")
+
+if is_firebase_available():
+    st.caption(f"{len(orders)} order(s) · 🟢 **Firebase Cloud Firestore Active** (`royal-natural-products`)")
+else:
+    st.caption(f"{len(orders)} order(s) · 📁 **Local Storage Mode** (`data/orders.json`)")
+
 
 if not orders:
     st.info("No orders yet. They will appear here as soon as customers check out.")

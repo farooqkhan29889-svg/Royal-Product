@@ -9,8 +9,10 @@ from pathlib import Path
 import streamlit as st
 
 ROOT = Path(__file__).resolve().parent.parent
-PRODUCTS_FILE = ROOT / "data" / "products.json"
-ORDERS_FILE = ROOT / "data" / "orders.json"
+DEFAULT_PRODUCTS_FILE = ROOT / "data" / "products.json"
+DEFAULT_ORDERS_FILE = ROOT / "data" / "orders.json"
+PRODUCTS_FILE = DEFAULT_PRODUCTS_FILE
+ORDERS_FILE = DEFAULT_ORDERS_FILE
 
 FREE_DELIVERY_THRESHOLD = 499
 
@@ -22,15 +24,35 @@ AVAILABLE_COUPONS = {
 }
 
 
+def _is_firestore_active():
+    """True if using the production orders file and Firebase is configured."""
+    try:
+        from utils.firebase_db import is_firebase_available
+        return ORDERS_FILE == DEFAULT_ORDERS_FILE and is_firebase_available()
+    except Exception:
+        return False
+
+
 @st.cache_data(ttl=300)
 def load_products():
-    products = json.loads(PRODUCTS_FILE.read_text(encoding="utf-8"))
+    if _is_firestore_active():
+        try:
+            from utils.firebase_db import firestore_load_products
+            products = firestore_load_products()
+            if not products and PRODUCTS_FILE.exists():
+                products = json.loads(PRODUCTS_FILE.read_text(encoding="utf-8"))
+        except Exception:
+            products = json.loads(PRODUCTS_FILE.read_text(encoding="utf-8"))
+    else:
+        products = json.loads(PRODUCTS_FILE.read_text(encoding="utf-8"))
+
     images_dir = PRODUCTS_FILE.parent / "images"
     for p in products:
         img = p.get("image", "")
         if not img.startswith(("http://", "https://")):
             p["image"] = str(images_dir / img)
     return products
+
 
 
 def get_product(product_id):
@@ -193,6 +215,21 @@ def clear_cart():
 
 
 def load_orders():
+    if _is_firestore_active():
+        try:
+            from utils.firebase_db import firestore_load_orders
+            orders = firestore_load_orders()
+            if orders:
+                try:
+                    ORDERS_FILE.write_text(
+                        json.dumps(orders, indent=2, ensure_ascii=False), encoding="utf-8"
+                    )
+                except Exception:
+                    pass
+                return orders
+        except Exception:
+            pass
+
     if not ORDERS_FILE.exists():
         return []
     try:
@@ -228,22 +265,45 @@ def save_order(
         order["discount"] = discount_info
     if payment_link:
         order["payment_link"] = payment_link
+
+    if _is_firestore_active():
+        try:
+            from utils.firebase_db import firestore_save_order
+            firestore_save_order(order)
+        except Exception:
+            pass
+
     orders = load_orders()
-    orders.append(order)
-    ORDERS_FILE.write_text(
-        json.dumps(orders, indent=2, ensure_ascii=False), encoding="utf-8"
-    )
+    if not any(o.get("id") == order["id"] for o in orders):
+        orders.append(order)
+    try:
+        ORDERS_FILE.write_text(
+            json.dumps(orders, indent=2, ensure_ascii=False), encoding="utf-8"
+        )
+    except Exception:
+        pass
     return order
 
 
 def mark_order_paid(order_id):
+    paid_at = datetime.now().strftime("%Y-%m-%d %H:%M")
+    if _is_firestore_active():
+        try:
+            from utils.firebase_db import firestore_update_order
+            firestore_update_order(order_id, {"payment_status": "Paid", "paid_at": paid_at})
+        except Exception:
+            pass
+
     orders = load_orders()
     for order in orders:
         if order["id"] == order_id:
             order["payment_status"] = "Paid"
-            order["paid_at"] = datetime.now().strftime("%Y-%m-%d %H:%M")
-            ORDERS_FILE.write_text(
-                json.dumps(orders, indent=2, ensure_ascii=False), encoding="utf-8"
-            )
+            order["paid_at"] = paid_at
+            try:
+                ORDERS_FILE.write_text(
+                    json.dumps(orders, indent=2, ensure_ascii=False), encoding="utf-8"
+                )
+            except Exception:
+                pass
             return order
     return None

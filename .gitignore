@@ -4,3 +4,7 @@ __pycache__/
 .env
 .streamlit/secrets.toml
 data/orders.json
+*firebase*.json
+*-adminsdk-*.json
+firebase-key.json
+
