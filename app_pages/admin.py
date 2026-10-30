@@ -10,9 +10,10 @@ import pandas as pd
 import streamlit as st
 
 from utils.invoice import invoice_bytes, print_invoice_script
+from utils.notifications import get_owner_whatsapp_alert_url
 from utils.store import load_orders, load_products
 from utils.firebase_db import is_firebase_available
-from utils.ui import apply_store_css
+from utils.ui import WA_ICON_SVG, apply_store_css
 
 apply_store_css()
 
@@ -203,7 +204,7 @@ with list_col:
                         icon=":material/payments:",
                         use_container_width=False,
                     )
-                dl, pr = st.columns(2)
+                dl, pr, wa = st.columns([1, 1, 1.2])
                 with dl:
                     st.download_button(
                         "Download invoice",
@@ -222,6 +223,17 @@ with list_col:
                         use_container_width=True,
                     ):
                         st.session_state["admin_print"] = order["id"]
+                with wa:
+                    wa_alert_link = get_owner_whatsapp_alert_url(order)
+                    st.markdown(
+                        f"""
+                        <a href="{wa_alert_link}" target="_blank" style="background: rgba(37, 211, 102, 0.15); border: 1px solid #25D366; color: #25D366 !important; border-radius: 8px; padding: 7px 12px; font-size: 0.82rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; height: 38px; box-sizing: border-box;">
+                            <span class="wa-icon-svg">{WA_ICON_SVG}</span>
+                            <span>Share to WhatsApp</span>
+                        </a>
+                        """,
+                        unsafe_allow_html=True,
+                    )
                 if st.session_state.get("admin_print") == order["id"]:
                     st.html(print_invoice_script(order, product_lookup))
                     if st.button("Close print view", key=f"admin_close_{order['id']}"):

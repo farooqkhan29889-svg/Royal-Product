@@ -3,6 +3,7 @@ import streamlit as st
 from utils.payments import PaymentError, verify_payment
 from utils.invoice import invoice_bytes, print_invoice_script
 from utils.store import load_orders, load_products, mark_order_paid, normalize_phone
+from utils.notifications import get_owner_whatsapp_alert_url
 from utils.ui import (
     WA_ICON_SVG,
     WHATSAPP_PHONE_DISPLAY,
@@ -63,6 +64,22 @@ if new_order_data:
         st.success(
             f"🎉 Congratulations! Order #{new_order} has been placed successfully! Our dispatch team is packaging your jars in shockproof safety boxes.",
             icon=":material/check_circle:",
+        )
+        owner_alert_url = get_owner_whatsapp_alert_url(new_order_data)
+        st.markdown(
+            f"""
+            <div style="background: rgba(37, 211, 102, 0.12); border: 1px solid #25D366; border-radius: 10px; padding: 12px 16px; margin: 10px 0 16px 0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                <div>
+                    <strong style="color: #25D366;">📲 Instant Order Dispatch Alert:</strong>
+                    <span style="font-size: 0.88rem; color: #CBD5E1; display: block;">Send this order directly to warehouse & dispatch team on WhatsApp.</span>
+                </div>
+                <a href="{owner_alert_url}" target="_blank" style="background: #25D366; color: #FFFFFF !important; font-weight: 700; font-size: 0.88rem; padding: 8px 16px; border-radius: 20px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+                    <span class="wa-icon-svg">{WA_ICON_SVG}</span>
+                    <span>Send Order to WhatsApp</span>
+                </a>
+            </div>
+            """,
+            unsafe_allow_html=True,
         )
         st.balloons()
 
