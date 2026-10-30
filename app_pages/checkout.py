@@ -138,7 +138,7 @@ with checkout_left:
         submitted = st.form_submit_button(
             f"Confirm & Place Order (₹{final_total:g})",
             icon=":material/lock:",
-            width="stretch",
+            use_container_width=True,
         )
 
 def finish_checkout(order):

@@ -15,8 +15,7 @@ import utils.store as store
 
 def check(label, cond):
     print(("PASS " if cond else "FAIL ") + label)
-    if not cond:
-        sys.exit(1)
+    assert cond, f"Check failed: {label}"
 
 
 def btn(at, user_key):
@@ -69,13 +68,13 @@ def run_checks(payment_state):
     at.text_input(key="checkout_mobile").set_value("12345")
     at.text_input(key="checkout_email").set_value("buyer@example.com")
     at.text_area(key="checkout_address").set_value("1 Main Street, Springfield")
-    at.form_submit_button[0].click()
+    at.button[0].click()
     at.run()
     check("invalid mobile rejected", bool(at.error))
     check("cart kept after validation error", at.session_state.cart.get(cart_key) == 1)
 
     at.text_input(key="checkout_mobile").set_value("98765 43210")
-    at.form_submit_button[0].click()
+    at.button[0].click()
     at.run()
     check("no exception after COD checkout", not at.exception)
     check("cart cleared after order", at.session_state.cart == {})
@@ -111,14 +110,14 @@ def run_checks(payment_state):
     at.text_input(key="checkout_mobile").set_value("9876543212")
     at.text_area(key="checkout_address").set_value("2 UPI Street, Mumbai")
     at.radio(key="checkout_payment").set_value("UPI / Card via Razorpay")
-    at.form_submit_button[0].click()
+    at.button[0].click()
     at.run()
     check("online payment needs configuration", bool(at.error))
     check("unconfigured order not saved", len(store.load_orders()) == 1)
     check("cart kept without payment link", sum(at.session_state.cart.values()) == 1)
 
     payment_state["configured"] = True
-    at.form_submit_button[0].click()
+    at.button[0].click()
     at.run()
     check("Razorpay order created without exception", not at.exception)
     check("cart cleared after payment link", at.session_state.cart == {})
@@ -127,7 +126,7 @@ def run_checks(payment_state):
     check("payment link attached", online_order["payment_link"]["id"] == "plink_test_123")
     check(
         "hosted payment page shown",
-        any(link.url == "https://rzp.io/l/test123" for link in at.link_button),
+        any(link.url == "https://rzp.io/l/test123" for link in at.get("link_button")),
     )
 
     at.switch_page("app_pages/orders.py")
@@ -146,7 +145,7 @@ def run_checks(payment_state):
     )
     check(
         "customer invoice download offered",
-        any(b.key == f"invoice_dl_{online_order['id']}" for b in at.download_button),
+        any(b.label == "Download invoice" for b in at.get("download_button")),
     )
 
     print("ALL CHECKS PASSED")
@@ -217,27 +216,27 @@ def run_admin_checks():
 
     with patch.dict(os.environ, {"ADMIN_PASSWORD": "s3cret"}):
         at.text_input[0].set_value("wrong-pass")
-        at.form_submit_button[0].click()
+        at.button[0].click()
         at.run()
         check("wrong password stays locked", bool(at.error) and not at.metric)
 
         at.text_input[0].set_value("s3cret")
-        at.form_submit_button[0].click()
+        at.button[0].click()
         at.run()
         check("correct password opens dashboard", not at.exception and bool(at.metric))
         check("admin counts every order", int(at.metric[0].value) == len(store.load_orders()))
         check(
             "admin invoice download present",
-            any(b.key == f"admin_dl_{admin_order['id']}" for b in at.download_button),
+            any(b.label == "Download invoice" for b in at.get("download_button")),
         )
         check(
             "admin exports csv",
-            any(b.label == "Export these orders (CSV)" for b in at.download_button),
+            any(b.label == "Export these orders (CSV)" for b in at.get("download_button")),
         )
 
         btn(at, f"admin_print_{admin_order['id']}").click()
         at.run()
-        check("admin print view renders invoice pane", bool(at.html) and not at.exception)
+        check("admin print view renders invoice pane", bool(at.get("html")) and not at.exception)
 
         at.selectbox[0].set_value("Pending payment")
         at.run()
@@ -309,17 +308,24 @@ def fake_verify_payment(order):
     return False, "Payment is not complete yet."
 
 
-try:
-    with TemporaryDirectory() as temp_dir:
-        store.ORDERS_FILE = Path(temp_dir) / "orders.json"
-        with (
-            patch.object(payments, "razorpay_configured", side_effect=lambda: payment_state["configured"]),
-            patch.object(payments, "create_payment_link", side_effect=fake_create_payment_link),
-            patch.object(payments, "verify_payment", side_effect=fake_verify_payment),
-        ):
-            run_checks(payment_state)
-        run_payment_api_checks()
-        run_invoice_checks()
-        run_admin_checks()
-finally:
-    store.ORDERS_FILE = original_orders_file
+def test_smoke():
+    global payment_state
+    payment_state = {"configured": False, "paid": False}
+    try:
+        with TemporaryDirectory() as temp_dir:
+            store.ORDERS_FILE = Path(temp_dir) / "orders.json"
+            with (
+                patch.object(payments, "razorpay_configured", side_effect=lambda: payment_state["configured"]),
+                patch.object(payments, "create_payment_link", side_effect=fake_create_payment_link),
+                patch.object(payments, "verify_payment", side_effect=fake_verify_payment),
+            ):
+                run_checks(payment_state)
+            run_payment_api_checks()
+            run_invoice_checks()
+            run_admin_checks()
+    finally:
+        store.ORDERS_FILE = original_orders_file
+
+
+if __name__ == "__main__":
+    test_smoke()

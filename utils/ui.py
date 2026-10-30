@@ -36,6 +36,33 @@ html, body, [class*="css"] {
     background-color: var(--bg-dark);
 }
 
+/* Clean Professional UI: Hide Streamlit 3-dots, Deploy button, GitHub ribbon, and footer */
+#MainMenu, 
+header[data-testid="stHeader"], 
+[data-testid="stToolbar"], 
+footer, 
+[data-testid="stDecoration"], 
+[data-testid="stStatusWidget"],
+.viewerBadge_container__1QSob,
+.viewerBadge_link__1QSob,
+[class*="viewerBadge"],
+[data-testid="manage-app-button"],
+.stDeployButton {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    width: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+.stApp > header {
+    display: none !important;
+}
+.stMainBlockContainer, .block-container {
+    padding-top: 1rem !important;
+}
+
 /* Header Navbar */
 div[class*="st-key-store_header"] {
     background: #07150D;
@@ -627,6 +654,41 @@ div[data-testid="stForm"] button[kind="primaryFormSubmit"],
     line-height: 1.5;
     margin: 0;
 }
+/* Floating WhatsApp Button */
+.floating-whatsapp {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: #25D366;
+    color: #FFFFFF !important;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 18px rgba(37, 211, 102, 0.45);
+    z-index: 999999;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation: pulse-wa 2.2s infinite;
+}
+.floating-whatsapp:hover {
+    transform: scale(1.1) rotate(5deg);
+    background: #20ba59;
+    box-shadow: 0 6px 24px rgba(37, 211, 102, 0.6);
+}
+@keyframes pulse-wa {
+    0% {
+        box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 15px rgba(37, 211, 102, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
+    }
+}
 </style>
 """
 
@@ -668,7 +730,7 @@ def render_header(cart_count_val=0):
                 "app_pages/cart.py",
                 label=f"Cart ({cart_count_val})",
                 icon=":material/shopping_cart:",
-                width="stretch",
+                use_container_width=True,
             )
 
 

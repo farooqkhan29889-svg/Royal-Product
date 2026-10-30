@@ -28,7 +28,7 @@ if not st.session_state.get("admin_ok"):
     with st.form("admin_login"):
         st.markdown("**Sign in required**")
         entered = st.text_input("Admin password", type="password")
-        if st.form_submit_button("Sign in", icon=":material/login:", width="stretch"):
+        if st.form_submit_button("Sign in", icon=":material/login:", use_container_width=True):
             if entered == os.getenv("ADMIN_PASSWORD", "admin123"):
                 st.session_state.admin_ok = True
                 st.rerun()
@@ -155,7 +155,7 @@ with summary_col:
                 Revenue=[f"₹{v['revenue']:,.0f}" for _, v in ranked],
             ),
             hide_index=True,
-            width="stretch",
+            use_container_width=True,
         )
         chart = pd.DataFrame(
             [
@@ -201,7 +201,7 @@ with list_col:
                         "Razorpay payment link",
                         order["payment_link"]["url"],
                         icon=":material/payments:",
-                        width="content",
+                        use_container_width=False,
                     )
                 dl, pr = st.columns(2)
                 with dl:
@@ -212,14 +212,14 @@ with list_col:
                         mime="text/html",
                         icon=":material/download:",
                         key=f"admin_dl_{order['id']}",
-                        width="stretch",
+                        use_container_width=True,
                     )
                 with pr:
                     if st.button(
                         "Print invoice",
                         icon=":material/print:",
                         key=f"admin_print_{order['id']}",
-                        width="stretch",
+                        use_container_width=True,
                     ):
                         st.session_state["admin_print"] = order["id"]
                 if st.session_state.get("admin_print") == order["id"]:
@@ -253,5 +253,5 @@ st.download_button(
     file_name="royal-orders.csv",
     mime="text/csv",
     icon=":material/table_view:",
-    width="stretch",
+    use_container_width=True,
 )

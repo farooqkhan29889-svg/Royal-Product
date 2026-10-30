@@ -256,12 +256,22 @@ for i, product in enumerate(filtered):
             )
 
             # Details expansion
-            with st.expander("🔍 View Purity Details & Reviews", expanded=False):
+            with st.expander("🔍 View Purity Details & Customer Reviews", expanded=False):
                 st.write(product["description"])
                 if product.get("highlights"):
                     for h in product["highlights"]:
                         st.markdown(f"- 🍃 {h}")
-                st.caption(f"⭐ Rating: {product['rating']}/5 ({product.get('rating_count', 0)} reviews)")
+                st.caption(f"⭐ Rating: {product['rating']}/5 ({product.get('rating_count', 0):,} verified reviews)")
+                
+                # Show verified reviews
+                reviews = product.get("reviews", [])
+                if reviews:
+                    st.markdown("---")
+                    st.markdown("**Customer Reviews:**")
+                    for rev in reviews:
+                        badge = " :green[*(Verified Buyer)*]" if rev.get("verified") else ""
+                        st.markdown(f"**{rev.get('name', 'Anonymous')}** {stars(rev.get('rating', 5))}{badge}")
+                        st.markdown(f"> *\"{rev.get('comment', '')}\"*")
 
 # Render Six Superfoods Section
 render_six_superfoods_section()

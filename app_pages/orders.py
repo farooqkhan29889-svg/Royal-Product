@@ -115,14 +115,14 @@ for order in reversed(orders):
                     "Pay by UPI / Card",
                     order["payment_link"]["url"],
                     icon=":material/payments:",
-                    width="stretch",
+                    use_container_width=True,
                 )
             with verify_col:
                 if st.button(
                     "Verify payment",
                     key=f"verify_payment_{order['id']}",
                     icon=":material/verified:",
-                    width="stretch",
+                    use_container_width=True,
                 ):
                     try:
                         paid, message = verify_payment(order)
@@ -172,14 +172,14 @@ for order in reversed(orders):
                     mime="text/html",
                     icon=":material/download:",
                     key=f"invoice_dl_{order['id']}",
-                    width="stretch",
+                    use_container_width=True,
                 )
             with pr_col:
                 if st.button(
                     "Print invoice",
                     icon=":material/print:",
                     key=f"invoice_print_{order['id']}",
-                    width="stretch",
+                    use_container_width=True,
                 ):
                     st.session_state["print_invoice"] = order["id"]
             if st.session_state.get("print_invoice") == order["id"]:
