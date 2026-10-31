@@ -294,6 +294,29 @@ def run_payment_api_checks():
             check("mismatched amount rejected", False)
 
 
+def run_owner_dashboard_checks():
+    import utils.notifications as notif
+    owner = notif.get_owner_details()
+    check("owner profile has store name", "छोटी मकड़ी HONEY" in owner["store_name"])
+    check("owner profile has contact phone", len(owner["phone"]) >= 10)
+
+    test_order = store.save_order(
+        {"name": "Notification Buyer", "phone": "9876543210", "address": "Indore, MP"},
+        [{"id": "pure-gold-honey", "name": "Pure Gold Honey", "price": 299, "qty": 1}],
+        299,
+        "Cash on Delivery",
+        payment_status="Cash on Delivery",
+    )
+    cust_url = notif.get_customer_whatsapp_url(test_order, message_type="confirmed")
+    check("customer whatsapp url generated", "wa.me/919876543210" in cust_url)
+
+    updated_order = store.update_order_fulfillment(test_order["id"], "Dispatched")
+    check("fulfillment updated to dispatched", updated_order["fulfillment_status"] == "Dispatched")
+
+    paid_order = store.update_order_payment(test_order["id"], "Paid")
+    check("payment status updated to paid", paid_order["payment_status"] == "Paid")
+
+
 original_orders_file = store.ORDERS_FILE
 payment_state = {"configured": False, "paid": False}
 
@@ -323,6 +346,7 @@ def test_smoke():
             run_payment_api_checks()
             run_invoice_checks()
             run_admin_checks()
+            run_owner_dashboard_checks()
     finally:
         store.ORDERS_FILE = original_orders_file
 

@@ -106,11 +106,13 @@ for order in reversed(orders):
                 status_bg, status_border, status_color = "#fffbeb", "#fde68a", "#92400e"
             elif payment_status == "Paid":
                 status_title = "Paid & Confirmed"
-                status_detail = "Preparing dispatch · Delivery in 2-3 days"
+                ful_state = order.get("fulfillment_status", "Preparing dispatch")
+                status_detail = f"Fulfillment: {ful_state} · Delivery in 2-3 days"
                 status_bg, status_border, status_color = "#ecfdf5", "#a7f3d0", "#065f46"
             else:
                 status_title = "Confirmed & Preparing Dispatch"
-                status_detail = "Estimated delivery: 2-3 days"
+                ful_state = order.get("fulfillment_status", "Preparing dispatch")
+                status_detail = f"Fulfillment: {ful_state} · Delivery in 2-3 days"
                 status_bg, status_border, status_color = "#ecfdf5", "#a7f3d0", "#065f46"
             st.markdown(
                 f"""

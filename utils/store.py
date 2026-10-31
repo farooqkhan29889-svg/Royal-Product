@@ -251,6 +251,7 @@ def save_order(
     order_id=None,
     payment_status="Confirmed",
     payment_link=None,
+    fulfillment_status="Order Placed",
 ):
     order = {
         "id": order_id or new_order_id(),
@@ -258,6 +259,7 @@ def save_order(
         "customer": customer,
         "payment_method": payment_method,
         "payment_status": payment_status,
+        "fulfillment_status": fulfillment_status,
         "items": items,
         "total": round(total, 2),
     }
@@ -307,3 +309,57 @@ def mark_order_paid(order_id):
                 pass
             return order
     return None
+
+
+def update_order_fulfillment(order_id, status):
+    """Updates the fulfillment state (e.g. Order Placed, Packaging, Dispatched, Delivered)."""
+    updated_at = datetime.now().strftime("%Y-%m-%d %H:%M")
+    if _is_firestore_active():
+        try:
+            from utils.firebase_db import firestore_update_order
+            firestore_update_order(order_id, {"fulfillment_status": status, "status_updated_at": updated_at})
+        except Exception:
+            pass
+
+    orders = load_orders()
+    for order in orders:
+        if order["id"] == order_id:
+            order["fulfillment_status"] = status
+            order["status_updated_at"] = updated_at
+            try:
+                ORDERS_FILE.write_text(
+                    json.dumps(orders, indent=2, ensure_ascii=False), encoding="utf-8"
+                )
+            except Exception:
+                pass
+            return order
+    return None
+
+
+def update_order_payment(order_id, payment_status):
+    """Updates payment status (e.g. Paid, Pending payment, Cash on Delivery)."""
+    updated_at = datetime.now().strftime("%Y-%m-%d %H:%M")
+    updates = {"payment_status": payment_status, "payment_updated_at": updated_at}
+    if payment_status == "Paid":
+        updates["paid_at"] = updated_at
+
+    if _is_firestore_active():
+        try:
+            from utils.firebase_db import firestore_update_order
+            firestore_update_order(order_id, updates)
+        except Exception:
+            pass
+
+    orders = load_orders()
+    for order in orders:
+        if order["id"] == order_id:
+            order.update(updates)
+            try:
+                ORDERS_FILE.write_text(
+                    json.dumps(orders, indent=2, ensure_ascii=False), encoding="utf-8"
+                )
+            except Exception:
+                pass
+            return order
+    return None
+
