@@ -864,6 +864,121 @@ def apply_store_css():
     st.html(STORE_CSS)
     render_floating_whatsapp()
 
+def render_sidebar():
+    """Renders a fully functional sidebar with branding, navigation, cart summary, and WhatsApp CTA."""
+    with st.sidebar:
+        # ── Brand Header ──────────────────────────────────────────
+        st.markdown(
+            f"""
+            <div style="text-align:center; padding: 1rem 0 0.6rem 0;">
+                <div style="font-size:2.8rem; line-height:1;">🐝</div>
+                <div style="font-family:'Georgia',serif; font-size:1.45rem; font-weight:800;
+                            color:#F59E0B; letter-spacing:0.5px; margin-top:6px;">
+                    {BRAND_NAME_HI}
+                </div>
+                <div style="font-size:0.62rem; font-weight:800; letter-spacing:3.5px;
+                            color:#E2E8F0; margin-top:2px; text-transform:uppercase;">
+                    {BRAND_NAME_EN}
+                </div>
+                <div style="height:1px; background:rgba(245,158,11,0.3);
+                            margin:14px 0 10px 0; border-radius:2px;"></div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        # ── Navigation Links ──────────────────────────────────────
+        st.markdown(
+            "<div style='font-size:0.7rem; font-weight:800; letter-spacing:2px; "
+            "color:#64748B; text-transform:uppercase; margin-bottom:6px;'>Navigation</div>",
+            unsafe_allow_html=True,
+        )
+        st.page_link("app_pages/shop.py",     label="🏪  Shop",            use_container_width=True)
+        st.page_link("app_pages/cart.py",     label="🛒  Cart",            use_container_width=True)
+        st.page_link("app_pages/checkout.py", label="💳  Checkout",        use_container_width=True)
+        st.page_link("app_pages/orders.py",   label="📦  My Orders",       use_container_width=True)
+        st.page_link("app_pages/admin.py",    label="🛡️  Owner Dashboard", use_container_width=True)
+
+        st.markdown(
+            "<div style='height:1px; background:rgba(245,158,11,0.2); margin:14px 0;'></div>",
+            unsafe_allow_html=True,
+        )
+
+        # ── Live Cart Summary ─────────────────────────────────────
+        try:
+            from utils.store import cart_count, cart_subtotal
+            count = cart_count()
+            if count > 0:
+                subtotal = cart_subtotal()
+                st.markdown(
+                    f"""
+                    <div style="background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.35);
+                                border-radius:12px; padding:12px 14px; margin-bottom:12px;">
+                        <div style="font-size:0.72rem; font-weight:800; letter-spacing:1.5px;
+                                    color:#94A3B8; text-transform:uppercase; margin-bottom:6px;">
+                            🛒 Cart Summary
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span style="color:#E2E8F0; font-size:0.9rem;">{count} item{'s' if count!=1 else ''}</span>
+                            <span style="color:#F59E0B; font-size:1.05rem; font-weight:800;">₹{subtotal:g}</span>
+                        </div>
+                        <div style="color:#10B981; font-size:0.75rem; margin-top:4px; font-weight:600;">
+                            🚚 FREE Delivery Included
+                        </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+            else:
+                st.markdown(
+                    """
+                    <div style="background:rgba(12,31,20,0.6); border:1px dashed rgba(245,158,11,0.2);
+                                border-radius:10px; padding:10px 14px; text-align:center;
+                                color:#475569; font-size:0.82rem; margin-bottom:12px;">
+                        🛒 Your cart is empty
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+        except Exception:
+            pass
+
+        # ── WhatsApp CTA ──────────────────────────────────────────
+        wa_url = get_whatsapp_url("Hi Chhoti Makdi Honey, I want to place an order!")
+        st.markdown(
+            f"""
+            <a href="{wa_url}" target="_blank" style="
+                display:flex; align-items:center; justify-content:center; gap:8px;
+                background:#25D366; color:#FFFFFF !important; font-weight:700;
+                font-size:0.88rem; padding:10px 14px; border-radius:25px;
+                text-decoration:none !important; margin-bottom:10px;
+                box-shadow: 0 4px 14px rgba(37,211,102,0.35);
+                transition: all 0.2s ease;">
+                {WA_ICON_SVG}
+                <span>Order on WhatsApp</span>
+            </a>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        # ── Store Trust Badges ────────────────────────────────────
+        st.markdown(
+            """
+            <div style="margin-top:10px;">
+                <div style="height:1px; background:rgba(245,158,11,0.2); margin-bottom:14px;"></div>
+                <div style="font-size:0.75rem; color:#64748B; line-height:1.9; text-align:center;">
+                    🍃 100% Natural &amp; Pure<br>
+                    🚫 No Added Sugar<br>
+                    🚚 Free Delivery above ₹499<br>
+                    🛡️ 7-Day Money Back Guarantee<br>
+                    📞 """ + WHATSAPP_PHONE_DISPLAY + """
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+
 def render_announcement_bar():
     """Placeholder announcement bar – can be customized later."""
     # Simple thin banner for compatibility

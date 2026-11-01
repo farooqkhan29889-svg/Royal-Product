@@ -1,4 +1,5 @@
 import streamlit as st
+from utils.ui import render_sidebar
 
 st.set_page_config(
     page_title="छोटी मकड़ी HONEY — 100% Pure Raw Honey & Dry Fruits",
@@ -20,6 +21,9 @@ page = st.navigation(
     ],
     position="sidebar",
 )
+
+# Render sidebar on every page
+render_sidebar()
 
 if page.title != "Shop":
     st.title(page.title)
