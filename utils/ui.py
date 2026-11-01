@@ -80,6 +80,16 @@ button[kind="header"] {
 [data-testid="stSidebar"] > div:first-child {
     padding-top: 0.5rem !important;
 }
+
+/* ── Hide "Owner Dashboard" from Streamlit's native sidebar nav ── */
+/* The admin page still works via direct URL /admin - just hidden from public menu */
+[data-testid="stSidebarNav"] a[href*="admin"] {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    pointer-events: none !important;
+}
+
 /* Style sidebar nav links */
 [data-testid="stSidebarNav"] a {
     color: #E2E8F0 !important;
@@ -923,18 +933,8 @@ def render_sidebar():
         )
 
         # ── Navigation Links ──────────────────────────────────────
-        st.markdown(
-            "<div style='font-size:0.7rem; font-weight:800; letter-spacing:2px; "
-            "color:#64748B; text-transform:uppercase; margin-bottom:6px;'>Navigation</div>",
-            unsafe_allow_html=True,
-        )
-        st.page_link("app_pages/shop.py",     label="🏪  Shop",      use_container_width=True)
-        st.page_link("app_pages/cart.py",     label="🛒  Cart",      use_container_width=True)
-        st.page_link("app_pages/checkout.py", label="💳  Checkout",  use_container_width=True)
-        st.page_link("app_pages/orders.py",   label="📦  My Orders", use_container_width=True)
-        # ⚠️ Admin Dashboard is intentionally hidden from public sidebar.
-        # Access it privately via: your-app-url/admin
-
+        # (Streamlit's st.navigation already renders nav links at top of sidebar)
+        # Only show quick-access link to Admin (hidden from main nav) for owner use
         st.markdown(
             "<div style='height:1px; background:rgba(245,158,11,0.2); margin:14px 0;'></div>",
             unsafe_allow_html=True,
