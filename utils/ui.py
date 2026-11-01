@@ -37,11 +37,10 @@ html, body, [class*="css"] {
 }
 
 /* Clean Professional UI: Hide Streamlit 3-dots, Deploy button, GitHub ribbon, and footer */
-#MainMenu, 
-header[data-testid="stHeader"], 
-[data-testid="stToolbar"], 
-footer, 
-[data-testid="stDecoration"], 
+/* NOTE: We do NOT hide stHeader or stApp>header so the sidebar toggle button stays visible */
+[data-testid="stToolbar"],
+footer,
+[data-testid="stDecoration"],
 [data-testid="stStatusWidget"],
 .viewerBadge_container__1QSob,
 .viewerBadge_link__1QSob,
@@ -56,9 +55,45 @@ footer,
     pointer-events: none !important;
 }
 
-.stApp > header {
-    display: none !important;
+/* Keep the header bar minimal but show the sidebar collapse/expand toggle */
+header[data-testid="stHeader"] {
+    background: transparent !important;
+    height: 3rem !important;
 }
+
+/* Force sidebar toggle button to always be visible */
+[data-testid="stSidebarCollapsedControl"],
+[data-testid="stSidebarCollapseButton"],
+button[kind="header"] {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+
+/* ── Sidebar Styling ──────────────────────────────────── */
+[data-testid="stSidebar"] {
+    background: #0C1F14 !important;
+    border-right: 1px solid rgba(245, 158, 11, 0.25) !important;
+    min-width: 240px !important;
+}
+[data-testid="stSidebar"] > div:first-child {
+    padding-top: 0.5rem !important;
+}
+/* Style sidebar nav links */
+[data-testid="stSidebarNav"] a {
+    color: #E2E8F0 !important;
+    font-weight: 600 !important;
+    border-radius: 10px !important;
+    padding: 8px 12px !important;
+    transition: background 0.2s ease !important;
+}
+[data-testid="stSidebarNav"] a:hover,
+[data-testid="stSidebarNav"] a[aria-current="page"] {
+    background: rgba(245, 158, 11, 0.15) !important;
+    color: #F59E0B !important;
+}
+
 .stMainBlockContainer, .block-container {
     padding-top: 1rem !important;
 }
