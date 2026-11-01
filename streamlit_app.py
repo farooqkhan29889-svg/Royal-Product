@@ -4,7 +4,7 @@ st.set_page_config(
     page_title="छोटी मकड़ी HONEY — 100% Pure Raw Honey & Dry Fruits",
     page_icon="🐝",
     layout="wide",
-    initial_sidebar_state="collapsed",
+    initial_sidebar_state="expanded",
 )
 
 if "cart" not in st.session_state:
@@ -18,7 +18,7 @@ page = st.navigation(
         st.Page("app_pages/orders.py", title="Orders", icon=":material/receipt_long:"),
         st.Page("app_pages/admin.py", title="Owner Dashboard", icon=":material/shield:"),
     ],
-    position="top",
+    position="sidebar",
 )
 
 if page.title != "Shop":
