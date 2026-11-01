@@ -928,11 +928,12 @@ def render_sidebar():
             "color:#64748B; text-transform:uppercase; margin-bottom:6px;'>Navigation</div>",
             unsafe_allow_html=True,
         )
-        st.page_link("app_pages/shop.py",     label="🏪  Shop",            use_container_width=True)
-        st.page_link("app_pages/cart.py",     label="🛒  Cart",            use_container_width=True)
-        st.page_link("app_pages/checkout.py", label="💳  Checkout",        use_container_width=True)
-        st.page_link("app_pages/orders.py",   label="📦  My Orders",       use_container_width=True)
-        st.page_link("app_pages/admin.py",    label="🛡️  Owner Dashboard", use_container_width=True)
+        st.page_link("app_pages/shop.py",     label="🏪  Shop",      use_container_width=True)
+        st.page_link("app_pages/cart.py",     label="🛒  Cart",      use_container_width=True)
+        st.page_link("app_pages/checkout.py", label="💳  Checkout",  use_container_width=True)
+        st.page_link("app_pages/orders.py",   label="📦  My Orders", use_container_width=True)
+        # ⚠️ Admin Dashboard is intentionally hidden from public sidebar.
+        # Access it privately via: your-app-url/admin
 
         st.markdown(
             "<div style='height:1px; background:rgba(245,158,11,0.2); margin:14px 0;'></div>",
